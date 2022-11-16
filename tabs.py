@@ -8,6 +8,9 @@ def select_season(season, user_menu):
     import matplotlib.pyplot as plt
     import seaborn as sns
 
+    categories = ['Year', 'City', 'Sport', 'Event', 'Name', 'region']
+    categories_head = ['Editions', 'Hosts', 'Sports', 'Events', 'Athletes', 'Nations']
+
     df = pd.read_csv('athlete_events.csv')
     region_df = pd.read_csv('noc_regions.csv')
     
@@ -37,56 +40,41 @@ def select_season(season, user_menu):
         st.table(medal_tally)
 
     if user_menu == 'Overall Stats':
-        editions = df['Year'].unique().shape[0] - 1
-        cities = df['City'].unique().shape[0]
-        sports = df['Sport'].unique().shape[0]
-        events = df['Event'].unique().shape[0]
-        athletes = df['Name'].unique().shape[0]
-        nations = df['region'].unique().shape[0]
-
+        overall_stats = []
+        for i in range(len(categories)):
+            overall_stats.append(helper.ucount(df, categories[i]))
         st.title("Top Statistics")
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.header("Editions")
-            st.title(editions)
+            st.subheader(categories_head[0])
+            st.title(overall_stats[0])
         with col2:
-            st.header("Hosts")
-            st.title(cities)
+            st.subheader(categories_head[1])
+            st.title(overall_stats[1])
         with col3:
-            st.header("Sports")
-            st.title(sports)
+            st.subheader(categories_head[2])
+            st.title(overall_stats[2])
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.header("Events")
-            st.title(events)
+            st.subheader(categories_head[3])
+            st.title(overall_stats[3])
         with col2:
-            st.header("Nations")
-            st.title(nations)
+            st.subheader(categories_head[4])
+            st.title(overall_stats[4])
         with col3:
-            st.header("Athletes")
-            st.title(athletes)
+            st.subheader(categories_head[5])
+            st.title(overall_stats[5])
 
-        nations_over_time = helper.data_over_time(df,'region')
-        fig = px.line(nations_over_time, x="Edition", y="region")
-        st.title("Participating Nations over the years")
-        st.plotly_chart(fig)
-
-        events_over_time = helper.data_over_time(df, 'Event')
-        fig = px.line(events_over_time, x="Edition", y="Event")
-        st.title("Events over the years")
-        st.plotly_chart(fig)
-
-        athlete_over_time = helper.data_over_time(df, 'Name')
-        fig = px.line(athlete_over_time, x="Edition", y="Name")
-        st.title("Athletes over the years")
-        st.plotly_chart(fig)
+        helper.overall_plot(df, 'region', 'Participating nations over the years')
+        helper.overall_plot(df, 'Event', 'Events over the years')
+        helper.overall_plot(df, 'Name', 'Athletes over the years')
 
         st.title("No. of Events over time(Every Sport)")
         fig, ax = plt.subplots(figsize=(20,20))
         x = df.drop_duplicates(['Year', 'Sport', 'Event'])
-        ax = sns.heatmap(x.pivot_table(index='Sport', columns='Year', values='Event', aggfunc='count').fillna(0).astype('int'),
-                    annot=True)
+        ax = (sns.heatmap(x.pivot_table(index='Sport', columns='Year', values='Event',
+                aggfunc ='count').fillna(0).astype('int'), annot=True))
         st.pyplot(fig)
 
         # User selects a sport choice

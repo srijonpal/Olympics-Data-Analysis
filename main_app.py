@@ -10,8 +10,8 @@ user_menu = st.sidebar.radio(
     ('Medal Tally', 'Overall Stats', 'Country-wise Stats')
 )
 with tab1:
-    tabs.select_season("Summer",user_menu)
+    tabs.select_season("Summer", user_menu)
 
 with tab2:
-    tabs.select_season("Winter",user_menu)
+    tabs.select_season("Winter", user_menu)
 
