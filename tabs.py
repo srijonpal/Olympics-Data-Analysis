@@ -1,36 +1,42 @@
 def select_season(season, user_menu):
+    
+    # importing necessary libraries
     import streamlit as st
     import pandas as pd
-    import preprocessor,helper
+    import preprocessor, helper
     import plotly.express as px
     import matplotlib.pyplot as plt
     import seaborn as sns
 
     df = pd.read_csv('athlete_events.csv')
     region_df = pd.read_csv('noc_regions.csv')
-
+    
+    # Updated dataframe is imported from preprocessor.py that is merged with region_df
+    # Also the season ["Summer","Winter"] is selected
     df = preprocessor.preprocess(df, region_df, season)
 
-
+    # Selection for user menu in the sidebar
     if user_menu == 'Medal Tally':
-        # st.sidebar.header("Medal Tally")
+        # CASE: Medal Tally
+        # List of all the Years and Countries is imported from helper.py
+        # Two drop-down selections are made for year, country and df is returned
         years, country = helper.country_year_list(df)
 
-        selected_year = st.selectbox("Select Year", years)
-        selected_country = st.selectbox("Select Country", country)
+        user_year = st.selectbox("Select Year", years)
+        user_country = st.selectbox("Select Country", country)
 
-        medal_tally = helper.fetch_medal_tally(df,selected_year,selected_country)
-        if selected_year == 'Overall' and selected_country == 'Overall':
+        medal_tally = helper.fetch_medal_tally(df, user_year, user_country)
+        if user_year == 'Overall' and user_country == 'Overall':
             st.title("Overall Tally")
-        if selected_year != 'Overall' and selected_country == 'Overall':
-            st.title("Medal Tally in " + str(selected_year) + " Olympics")
-        if selected_year == 'Overall' and selected_country != 'Overall':
-            st.title(selected_country + " overall performance")
-        if selected_year != 'Overall' and selected_country != 'Overall':
-            st.title(selected_country + " performance in " + str(selected_year) + " Olympics")
+        if user_year != 'Overall' and user_country == 'Overall':
+            st.title("Medal Tally in " + str(user_year) + " Olympics")
+        if user_year == 'Overall' and user_country != 'Overall':
+            st.title(user_country + " overall performance")
+        if user_year != 'Overall' and user_country != 'Overall':
+            st.title(user_country + " performance in " + str(user_year) + " Olympics")
         st.table(medal_tally)
 
-    if user_menu == 'Overall Analysis':
+    if user_menu == 'Overall Stats':
         editions = df['Year'].unique().shape[0] - 1
         cities = df['City'].unique().shape[0]
         sports = df['Sport'].unique().shape[0]
@@ -92,26 +98,28 @@ def select_season(season, user_menu):
         x = helper.most_successful(df,selected_sport)
         st.table(x)
 
-    if user_menu == 'Country-wise Analysis':
-
-        # st.sidebar.title('Country-wise Analysis')
+    if user_menu == 'Country-wise Stats':
+        # CASE: Country-wise Stats
+        # List of all the Countries is imported from df
+        # One drop-down selection is made for country and df is returned
+        # Line chart and Heatmap is created for medals and various sports
 
         country_list = df['region'].dropna().unique().tolist()
         country_list.sort()
 
-        selected_country = st.selectbox('Select a Country',country_list)
+        user_country = st.selectbox('Select a Country', country_list)
 
-        country_df = helper.yearwise_medal_tally(df,selected_country)
+        country_df = helper.yearwise_medal_tally(df, user_country)
         fig = px.line(country_df, x="Year", y="Medal")
-        st.title(selected_country + " performance over years")
+        st.title(user_country + " performance over the years")
         st.plotly_chart(fig)
 
-        st.title(selected_country + " excels in the following sports")
-        pt = helper.country_event_heatmap(df,selected_country)
+        st.title(user_country + " excels in the following sports")
+        pt = helper.country_event_heatmap(df,user_country)
         fig, ax = plt.subplots(figsize=(20, 20))
         ax = sns.heatmap(pt,annot=True)
         st.pyplot(fig)
 
-        st.title("Top athletes for" + selected_country)
-        top10_df = helper.most_successful_countrywise(df,selected_country)
+        st.title("Top athletes for" + user_country)
+        top10_df = helper.most_successful_countrywise(df,user_country)
         st.table(top10_df)
