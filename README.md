@@ -20,3 +20,9 @@ Data analysis based on the following parameters:
 
 3) Country-wise Stats
 
+![img.png](img.png)
+
+![img_1.png](img_1.png)
+
+
+
