@@ -40,6 +40,11 @@ def select_season(season, user_menu):
         st.table(medal_tally)
 
     if user_menu == 'Overall Stats':
+        # CASE: Overall statistics
+        # Listing overall stats for all the Years, event host, sports etc.
+        # plot for categories over the years
+        # heatmap count for sports vs years
+
         overall_stats = []
         for i in range(len(categories)):
             overall_stats.append(helper.ucount(df, categories[i]))
@@ -78,7 +83,7 @@ def select_season(season, user_menu):
         st.pyplot(fig)
 
         # User selects a sport choice
-        # Successfully athletes by their sports
+        # Top Successful athletes for a user selected sports
         st.title("Most successful Athletes")
         sport_list = df['Sport'].unique().tolist()
         sport_list.sort()
@@ -109,7 +114,7 @@ def select_season(season, user_menu):
         st.title(user_country + " excels in the following sports")
         pt = helper.country_event_heatmap(df,user_country)
         fig, ax = plt.subplots(figsize=(20, 20))
-        ax = sns.heatmap(pt,annot=True)
+        ax = sns.heatmap(pt, annot=True)
         st.pyplot(fig)
 
         # List of Top Athletes
